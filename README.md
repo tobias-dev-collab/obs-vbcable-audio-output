@@ -59,3 +59,24 @@ docs/       Build-Anleitung
 GPL-2.0 (wie OBS Studio, gegen dessen `libobs` das Plugin linkt). Siehe [LICENSE](LICENSE).
 
 VB-CABLE ist ein Produkt von VB-Audio Software und nicht Teil dieses Projekts.
+
+## Begleit-App: OBS Bridge (`app/JoyclubObsBridge`)
+
+Optionale Windows-App (WPF, .NET 8) für den Livestream-Workflow im Browser:
+
+- verbindet sich per **OBS WebSocket v5** mit OBS (inkl. Passwort-Authentifizierung) und zeigt Status und OBS-Version an,
+- öffnet die Streaming-Seite in einem eingebetteten Browser (WebView2), in dem du dich **selbst** anmeldest,
+- lokale Felder für Titel, Beschreibung und Profil (werden noch nicht übertragen),
+- Diagnoseprotokoll ohne Passwörter, Cookies oder Tokens.
+
+Die App speichert keine Zugangsdaten. Sie wird nicht für das Audio-Plugin benötigt.
+
+**Installation:** `JoyclubObsBridge-win-x64.zip` unter [Releases](../../releases) laden, entpacken, `JoyclubObsBridge.exe` starten (keine Installation, .NET ist enthalten). Voraussetzung ist die **Microsoft Edge WebView2 Runtime**, die bei Windows 10/11 normalerweise schon installiert ist ([Download](https://developer.microsoft.com/de-de/microsoft-edge/webview2/)).
+
+**In OBS:** *Werkzeuge → WebSocket-Server-Einstellungen* → *WebSocket-Server aktivieren*, Port (Standard 4455) und ggf. Passwort in der App eintragen → **OBS verbinden**.
+
+**Selbst bauen:**
+
+```powershell
+dotnet publish .\app\JoyclubObsBridge\JoyclubObsBridge.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o .\publish
+```

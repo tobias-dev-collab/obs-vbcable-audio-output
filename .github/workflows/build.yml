@@ -54,10 +54,18 @@ jobs:
           Copy-Item LICENSE $pkg
           Compress-Archive -Path "$pkg/*" -DestinationPath dist/obs-vbcable-audio-output.zip -Force
 
+      - name: Build bridge app
+        shell: pwsh
+        run: |
+          dotnet publish app/JoyclubObsBridge/JoyclubObsBridge.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=None -o dist/app
+          Compress-Archive -Path "dist/app/*" -DestinationPath dist/JoyclubObsBridge-win-x64.zip -Force
+
       - uses: actions/upload-artifact@v4
         with:
           name: obs-vbcable-audio-output
-          path: dist/obs-vbcable-audio-output.zip
+          path: |
+            dist/obs-vbcable-audio-output.zip
+            dist/JoyclubObsBridge-win-x64.zip
 
       - name: Publish release
         if: startsWith(github.ref, 'refs/tags/v') || inputs.release_version != ''
@@ -65,5 +73,7 @@ jobs:
         with:
           tag_name: ${{ inputs.release_version || github.ref_name }}
           target_commitish: ${{ github.sha }}
-          files: dist/obs-vbcable-audio-output.zip
+          files: |
+            dist/obs-vbcable-audio-output.zip
+            dist/JoyclubObsBridge-win-x64.zip
           generate_release_notes: true

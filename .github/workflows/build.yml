@@ -32,6 +32,12 @@ jobs:
         shell: cmd
         run: build.cmd
 
+      - name: Verify DLL
+        shell: cmd
+        run: |
+          dumpbin /nologo /exports build\obs-vbcable-audio-output.dll | findstr /C:"obs_module_load" || exit /b 1
+          dumpbin /nologo /imports build\obs-vbcable-audio-output.dll | findstr /I /C:"obs.dll" /C:"blog" /C:"raw_audio_callback"
+
       - name: Package
         shell: pwsh
         run: |

@@ -1,0 +1,56 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  OBS_VERSION: 32.2.2
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch OBS headers
+        shell: pwsh
+        run: git clone --depth 1 --branch $env:OBS_VERSION https://github.com/obsproject/obs-studio.git third_party/obs-studio
+
+      - name: Set up MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Build plugin
+        shell: cmd
+        run: build.cmd
+
+      - name: Package
+        shell: pwsh
+        run: |
+          $pkg = "dist/obs-vbcable-audio-output"
+          New-Item -ItemType Directory -Force $pkg | Out-Null
+          Copy-Item build/obs-vbcable-audio-output.dll $pkg
+          Copy-Item installer/* $pkg
+          Copy-Item INSTALLATION.md $pkg
+          Copy-Item LICENSE $pkg
+          Compress-Archive -Path "$pkg/*" -DestinationPath dist/obs-vbcable-audio-output.zip -Force
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: obs-vbcable-audio-output
+          path: dist/obs-vbcable-audio-output.zip
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/obs-vbcable-audio-output.zip
+          generate_release_notes: true

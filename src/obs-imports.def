@@ -1,0 +1,5 @@
+LIBRARY obs
+EXPORTS
+    obs_add_raw_audio_callback
+    obs_remove_raw_audio_callback
+    blog

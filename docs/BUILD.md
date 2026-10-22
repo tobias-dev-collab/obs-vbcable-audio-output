@@ -30,10 +30,7 @@ Das Plugin braucht keinen kompletten OBS-Build. Es reichen die **libobs-Header**
 
 ## Release erstellen
 
-```bash
-git tag v0.2.0
-git push origin v0.2.0
-```
+Entweder ein Tag `v*` pushen (`git tag v0.3.0 && git push origin v0.3.0`) oder auf GitHub unter **Actions → Build → Run workflow** eine Version (z. B. `v0.3.0`) eintragen.
 
 GitHub Actions baut die DLL auf `windows-latest`, packt sie mit Installer und Anleitung in `obs-vbcable-audio-output.zip` und hängt sie an das Release.
 

@@ -6,6 +6,11 @@ on:
     tags: ['v*']
   pull_request:
   workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release-Version (z. B. v0.2.0). Leer = nur bauen.'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -55,8 +60,10 @@ jobs:
           path: dist/obs-vbcable-audio-output.zip
 
       - name: Publish release
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.release_version != ''
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ inputs.release_version || github.ref_name }}
+          target_commitish: ${{ github.sha }}
           files: dist/obs-vbcable-audio-output.zip
           generate_release_notes: true
